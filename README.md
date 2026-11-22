@@ -1,0 +1,34 @@
+
+name: Build LooseMotion APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: 8.7
+
+      - name: Extract project
+        run: |
+          unzip LooseMotion-stage1.zip -d source
+
+      - name: Build APK
+        run: |
+          cd source/LooseMotion
+          gradle assembleDebug --no-daemon
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LooseMotion-apk
+          path: source/LooseMotion/app/build/outputs/apk/debug/*.apk
